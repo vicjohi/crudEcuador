@@ -33,6 +33,7 @@ public class CuentaServiceImpl implements CuentaService{
 		}
 		
 		cuenta.setCliente(cliente.get());		
+		
 		return cuentaRepository.save(cuenta);
 	}
 

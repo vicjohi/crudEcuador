@@ -1,6 +1,8 @@
 package com.nttdata.crudEcuador.model;
 
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -27,7 +29,7 @@ public class Movimiento {
 	
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)
-	private Calendar  fecha;
+	private Date  fecha;
 	
 	@Column
 	private String tipo;
@@ -38,7 +40,11 @@ public class Movimiento {
 	@Column
 	private Double saldo;
 	
-	 @ManyToOne
+	@Column 
+	private Double saldoInicial;
+	
+	@ManyToOne
 	private Cuenta cuenta;
+	 
 	
 }

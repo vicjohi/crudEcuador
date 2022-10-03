@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nttdata.crudEcuador.exception.ResourceNotFoundException;
 import com.nttdata.crudEcuador.model.Cuenta;
 import com.nttdata.crudEcuador.service.CuentaService;
 
@@ -24,31 +25,29 @@ public class CuentaController {
 	private CuentaService cuentaService;
 	
 	@PostMapping
-	public ResponseEntity<Cuenta> createCliente(@RequestBody Cuenta Cuenta ){
-		return ResponseEntity.status(HttpStatus.CREATED).body(cuentaService.saveCuenta(Cuenta));		
+	public ResponseEntity<Cuenta> createCliente(@RequestBody Cuenta cuenta ){
+				
+		return ResponseEntity.status(HttpStatus.CREATED).body(cuentaService.saveCuenta(cuenta));		
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Cuenta>> findById(@PathVariable(value ="id") String id){
-		Optional<Cuenta> oCuenta = cuentaService.findById(id);
-		if(!oCuenta.isPresent()) {
-			return ResponseEntity.notFound().build();			
-		}
+	public ResponseEntity<Cuenta> findById(@PathVariable(value ="id") String id) throws ResourceNotFoundException{
+		Cuenta oCuenta = cuentaService.findById(id)
+				.orElseThrow(()-> new ResourceNotFoundException("No existe el numero de CuentaId: "+id));
+	
 		return ResponseEntity.ok(oCuenta);		
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Cuenta> update(@RequestBody Cuenta cuentaDetail,@PathVariable(value ="id") String cuentaId){
-		Optional<Cuenta> cuenta = cuentaService.findById(cuentaId);
-		if(!cuenta.isPresent()) {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<Cuenta> update(@RequestBody Cuenta cuentaDetail,@PathVariable(value ="id") String id) throws ResourceNotFoundException{
+		Cuenta cuenta = cuentaService.findById(id)
+				.orElseThrow(()-> new ResourceNotFoundException("No existe la cuentaId: "+id));
 		
-		cuenta.get().setCliente(cuentaDetail.getCliente());
-		cuenta.get().setEstado(cuentaDetail.getEstado());
-		cuenta.get().setSaldoinicial(cuentaDetail.getSaldoinicial());
-		cuenta.get().setTipo(cuentaDetail.getTipo());
+		cuenta.setCliente(cuentaDetail.getCliente());
+		cuenta.setEstado(cuentaDetail.getEstado());
+		cuenta.setSaldoinicial(cuentaDetail.getSaldoinicial());
+		cuenta.setTipo(cuentaDetail.getTipo());
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(cuentaService.saveCuenta(cuentaDetail));
+		return ResponseEntity.status(HttpStatus.CREATED).body(cuentaService.saveCuenta(cuenta));
 	}
 }
